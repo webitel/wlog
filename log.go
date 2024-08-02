@@ -24,10 +24,17 @@ const (
 type Field = zapcore.Field
 
 var Int64 = zap.Int64
+var Float64 = zap.Float64
 var Int = zap.Int
 var String = zap.String
+var Duration = zap.Duration
 var Any = zap.Any
 var Err = zap.Error
+var Namespace = zap.Namespace
+
+var Context = func(value interface{}) Field {
+	return Any("context", value)
+}
 
 type LoggerConfiguration struct {
 	EnableConsole bool
@@ -100,10 +107,7 @@ func NewLogger(config *LoggerConfiguration) *Logger {
 
 	combinedCore := zapcore.NewTee(cores...)
 
-	logger.zap = zap.New(combinedCore,
-		zap.AddCallerSkip(1),
-		zap.AddCaller(),
-	)
+	logger.zap = zap.New(combinedCore)
 
 	return logger
 }
@@ -145,4 +149,8 @@ func (l *Logger) Error(message string, fields ...Field) {
 
 func (l *Logger) Critical(message string, fields ...Field) {
 	l.zap.Error(message, fields...)
+}
+
+func (l *Logger) Err(err error) {
+	l.zap.Error(err.Error(), Any("error", map[string]interface{}{}))
 }
