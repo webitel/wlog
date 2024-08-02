@@ -62,11 +62,16 @@ func getZapLevel(level string) zapcore.Level {
 
 func makeEncoder(json bool) zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
+	//encoderConfig.FunctionKey = "func"
+	encoderConfig.TimeKey = "timestamp"
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	encoderConfig.MessageKey = "message"
+
 	if json {
 		return zapcore.NewJSONEncoder(encoderConfig)
 	}
 
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	return zapcore.NewConsoleEncoder(encoderConfig)
 }
 
