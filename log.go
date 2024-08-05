@@ -29,12 +29,12 @@ var Int = zap.Int
 var String = zap.String
 var Duration = zap.Duration
 var Any = zap.Any
-var Err = zap.Error
-var Namespace = zap.Namespace
 
-var Context = func(value interface{}) Field {
-	return Any("context", value)
+func Err(err error) Field {
+	return zap.NamedError("error", err)
 }
+
+var Namespace = zap.Namespace
 
 type LoggerConfiguration struct {
 	EnableConsole bool
