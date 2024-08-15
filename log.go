@@ -1,12 +1,13 @@
 package wlog
 
 import (
-	"log"
-	"os"
-
+	"go.opentelemetry.io/contrib/bridges/otelzap"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
 	"gopkg.in/natefinch/lumberjack.v2"
+	"log"
+	"os"
 )
 
 const (
@@ -37,6 +38,7 @@ func Err(err error) Field {
 var Namespace = zap.Namespace
 
 type LoggerConfiguration struct {
+	EnableExport  bool
 	EnableConsole bool
 	ConsoleJson   bool
 	ConsoleLevel  string
@@ -103,6 +105,10 @@ func NewLogger(config *LoggerConfiguration) *Logger {
 		})
 		core := zapcore.NewCore(makeEncoder(config.FileJson), writer, logger.fileLevel)
 		cores = append(cores, core)
+	}
+
+	if config.EnableExport {
+		cores = append(cores, otelzap.NewCore("wlog"))
 	}
 
 	combinedCore := zapcore.NewTee(cores...)
