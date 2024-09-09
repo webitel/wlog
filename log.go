@@ -114,7 +114,10 @@ func NewLogger(config *LoggerConfiguration) *Logger {
 
 	combinedCore := zapcore.NewTee(cores...)
 
-	logger.zap = zap.New(combinedCore, zap.WithCaller(true))
+	logger.zap = zap.New(combinedCore,
+		zap.AddCallerSkip(1),
+		zap.AddCaller(),
+	)
 
 	return logger
 }
