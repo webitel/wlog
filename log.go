@@ -76,6 +76,7 @@ func makeEncoder(json bool) zapcore.Encoder {
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoderConfig.MessageKey = "message"
+	encoderConfig.CallerKey = "caller"
 
 	if json {
 		return zapcore.NewJSONEncoder(encoderConfig)
@@ -113,7 +114,7 @@ func NewLogger(config *LoggerConfiguration) *Logger {
 
 	combinedCore := zapcore.NewTee(cores...)
 
-	logger.zap = zap.New(combinedCore)
+	logger.zap = zap.New(combinedCore, zap.WithCaller(true))
 
 	return logger
 }
