@@ -100,9 +100,10 @@ func NewLogger(config *LoggerConfiguration) *Logger {
 
 	if config.EnableFile {
 		writer := zapcore.AddSync(&lumberjack.Logger{
-			Filename: config.FileLocation,
-			MaxSize:  100,
-			Compress: true,
+			Filename:   config.FileLocation,
+			MaxSize:    1000,
+			MaxBackups: 7,
+			Compress:   true,
 		})
 		core := zapcore.NewCore(makeEncoder(config.FileJson), writer, logger.fileLevel)
 		cores = append(cores, core)
